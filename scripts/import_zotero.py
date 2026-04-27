@@ -2,6 +2,7 @@ import json
 import os
 import re
 import hashlib
+import argparse
 
 # ===== PATH SETUP (RELATIVE) =====
 
@@ -11,15 +12,35 @@ PAPERS_PATH = os.path.join(BASE_DIR, "papers")
 
 os.makedirs(PAPERS_PATH, exist_ok=True)
 
+AUTO_START = "<!-- AUTO-GENERATED START -->"
+AUTO_END = "<!-- AUTO-GENERATED END -->"
+AI_START = "<!-- AI-GENERATED START -->"
+AI_END = "<!-- AI-GENERATED END -->"
+
+# ===== ARGUMENTS =====
+
+parser = argparse.ArgumentParser(description="Import a Better BibTeX JSON export into paper notes.")
+parser.add_argument(
+    "--export",
+    default=None,
+    help="Path to a Zotero Better BibTeX JSON export. Defaults to zotero-export/library.json, then the first JSON file in zotero-export/.",
+)
+args = parser.parse_args()
+
 # ===== FIND EXPORT FILE =====
 
-json_files = [f for f in os.listdir(EXPORT_DIR) if f.endswith(".json")]
+if args.export:
+    EXPORT_PATH = os.path.abspath(args.export)
+elif os.path.exists(os.path.join(EXPORT_DIR, "library.json")):
+    EXPORT_PATH = os.path.join(EXPORT_DIR, "library.json")
+else:
+    json_files = sorted(f for f in os.listdir(EXPORT_DIR) if f.endswith(".json"))
 
-if not json_files:
-    print("❌ No Zotero export JSON found in zotero-export/")
-    exit(1)
+    if not json_files:
+        print("No Zotero export JSON found in zotero-export/")
+        exit(1)
 
-EXPORT_PATH = os.path.join(EXPORT_DIR, json_files[0])
+    EXPORT_PATH = os.path.join(EXPORT_DIR, json_files[0])
 
 # ===== HELPERS =====
 
@@ -27,7 +48,7 @@ def safe_filename(name):
     return re.sub(r'[\\/*?:"<>|]', "", name)
 
 def compute_hash(text):
-    return hashlib.md5(text.encode("utf-8")).hexdigest()
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 def format_authors(creators):
     authors = []
@@ -53,6 +74,40 @@ def extract_annotations(item):
         if text.strip():
             annotations.append(text.strip())
     return annotations
+
+def build_ai_placeholder(hash_val):
+    return f"""{AI_START}
+
+<!-- AI-SOURCE-HASH: pending:{hash_val} -->
+<!-- AI-STATUS: pending -->
+
+## Digest Summary
+- Pending AI digestion.
+
+## Key Contributions
+- Pending AI digestion.
+
+## Core Ideas / Intuition
+- Pending AI digestion.
+
+## Important Details
+- Pending AI digestion.
+
+## Candidate Concepts
+- Pending AI digestion.
+
+{AI_END}"""
+
+def ensure_ai_block(text, hash_val):
+    if AI_START in text and AI_END in text:
+        return text
+
+    block = "\n\n---\n\n" + build_ai_placeholder(hash_val)
+
+    if AUTO_END in text:
+        return text.replace(AUTO_END, AUTO_END + block, 1)
+
+    return text.rstrip() + block + "\n"
 
 # ===== BUILD AUTO CONTENT =====
 
@@ -89,9 +144,6 @@ def build_auto_content(authors, year, citekey, abstract, pdf_link, annotations):
 # ===== UPDATE EXISTING NOTE =====
 
 def update_note(filepath, auto_content, new_hash, title, citekey):
-    start_tag = "<!-- AUTO-GENERATED START -->"
-    end_tag = "<!-- AUTO-GENERATED END -->"
-
     with open(filepath, "r", encoding="utf-8") as f:
         old = f.read()
 
@@ -101,8 +153,16 @@ def update_note(filepath, auto_content, new_hash, title, citekey):
     if match:
         old_hash = match.group(1)
 
+    old = ensure_ai_block(old, new_hash)
+
     # Skip if no changes
     if old_hash == new_hash:
+        with open(filepath, "r", encoding="utf-8") as f:
+            current = f.read()
+        if current != old:
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(old)
+            return "prepared"
         return "unchanged"
 
     new_auto_block = f"""<!-- HASH: {new_hash} -->
@@ -111,28 +171,30 @@ def update_note(filepath, auto_content, new_hash, title, citekey):
 """
 
     # CASE 1: markers exist → replace section
-    if start_tag in old and end_tag in old:
-        before = old.split(start_tag)[0]
-        after = old.split(end_tag)[1]
+    if AUTO_START in old and AUTO_END in old:
+        before = old.split(AUTO_START)[0]
+        after = old.split(AUTO_END)[1]
 
-        new_text = before + start_tag + "\n\n" + new_auto_block + "\n" + end_tag + after
+        new_text = before + AUTO_START + "\n\n" + new_auto_block + "\n" + AUTO_END + after
 
-    # CASE 2: markers missing → inject
+    # CASE 2: markers missing -> inject
     else:
-        print(f"⚠️ Injecting markers into: {citekey}.md")
+        print(f"Injecting markers into: {citekey}.md")
 
         new_text = f"""# {title}
 
-{start_tag}
+{AUTO_START}
 
 {new_auto_block}
 
-{end_tag}
+{AUTO_END}
 
 ---
 
 {old}
 """
+
+    new_text = ensure_ai_block(new_text, new_hash)
 
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(new_text)
@@ -151,13 +213,17 @@ tags: [paper]
 
 # {title}
 
-<!-- AUTO-GENERATED START -->
+{AUTO_START}
 
 <!-- HASH: {hash_val} -->
 
 {auto_content}
 
-<!-- AUTO-GENERATED END -->
+{AUTO_END}
+
+---
+
+{build_ai_placeholder(hash_val)}
 
 ---
 
@@ -242,6 +308,8 @@ for item in items:
         if result == "updated":
             print(f"Updated: {citekey}.md")
             updated += 1
+        elif result == "prepared":
+            print(f"Prepared for AI digestion: {citekey}.md")
         elif result == "unchanged":
             unchanged += 1
     else:

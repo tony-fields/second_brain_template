@@ -1,12 +1,14 @@
 # Codex Rules for Second Brain
 
 ## Safety Rules
-- NEVER overwrite anything outside AUTO-GENERATED markers
+- NEVER overwrite content outside the generated block owned by the current task
 - NEVER delete user-written notes
 - ALWAYS preserve:
   - Notes
   - Connections
   - Open Questions
+- Treat AUTO-GENERATED as Zotero-owned
+- Treat AI-GENERATED as agent-owned
 
 ## File Rules
 - Papers are stored in: papers/
@@ -14,10 +16,8 @@
 - Use citekeys as identifiers
 
 ## Editing Rules
-- Only modify:
-  - Key Contributions
-  - Core Ideas / Intuition
-  - Connections (append only)
+- Paper digestion should only modify the AI-GENERATED block
+- Concept linking may modify Connections (append only)
 - Prefer adding, not replacing
 
 ## Linking Rules
