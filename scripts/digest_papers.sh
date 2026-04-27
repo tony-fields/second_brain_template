@@ -22,8 +22,11 @@ if ! command -v codex >/dev/null 2>&1; then
 fi
 
 echo "Running Codex paper digestion"
-codex run codex/commands/process_new_papers.md
+codex exec \
+  --cd "$REPO_DIR" \
+  --sandbox workspace-write \
+  --ask-for-approval never \
+  - < codex/commands/process_new_papers.md
 
 echo "Rechecking digestion status"
 python3 scripts/paper_digest_status.py
-
