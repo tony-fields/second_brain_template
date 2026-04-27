@@ -22,10 +22,9 @@ if ! command -v codex >/dev/null 2>&1; then
 fi
 
 echo "Running Codex paper digestion"
-codex exec \
+codex --ask-for-approval never exec \
   --cd "$REPO_DIR" \
   --sandbox workspace-write \
-  --ask-for-approval never \
   - < codex/commands/process_new_papers.md
 
 echo "Rechecking digestion status"
