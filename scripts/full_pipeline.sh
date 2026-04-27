@@ -12,4 +12,7 @@ python3 scripts/import_zotero.py
 echo "Step 2: Running paper digestion"
 bash scripts/digest_papers.sh
 
+echo "Step 3: Running concept linking"
+bash scripts/link_concepts.sh
+
 echo "Pipeline complete"
