@@ -1,6 +1,6 @@
 # Link Concepts
 
-Use this command to build and maintain the paper-to-concept graph.
+Use this command to build and maintain the Obsidian paper-to-concept graph.
 
 ## Workflow
 
@@ -32,6 +32,9 @@ Use this format:
 ## Related Papers
 - [[citekey]]
 
+## Related Concepts
+- [[Related Concept]]
+
 <!-- CONCEPT-GENERATED END -->
 
 ---
@@ -42,7 +45,17 @@ Use this format:
 
 If a concept file already exists, replace only the `CONCEPT-GENERATED` block and preserve everything outside it.
 
-4. Append non-duplicate links to each paper's `## Connections` section:
+4. Create graph edges with real wiki links.
+
+Obsidian's graph is built from Markdown links, so every relationship must be represented as a `[[Wiki Link]]`.
+
+Create these edges:
+
+- Paper -> concept: append links to each paper's `## Connections` section.
+- Concept -> paper: list paper links in each concept's `## Related Papers` section.
+- Concept -> concept: list high-confidence concept links in each concept's `## Related Concepts` section.
+
+Paper links should look like:
 
 ```md
 ## Connections
@@ -51,6 +64,27 @@ If a concept file already exists, replace only the `CONCEPT-GENERATED` block and
 
 If `## Connections` is missing, add it near the end of the file.
 
+5. Maintain `concepts/Concept Graph.md` as an index note:
+
+```md
+# Concept Graph
+
+<!-- GRAPH-GENERATED START -->
+
+## Concepts
+- [[Concept Name]]
+
+## Paper Links
+- [[citekey]] -> [[Concept Name]]
+
+## Concept Links
+- [[Concept A]] -> [[Concept B]]
+
+<!-- GRAPH-GENERATED END -->
+```
+
+If `concepts/Concept Graph.md` already exists, replace only the `GRAPH-GENERATED` block and preserve everything outside it.
+
 ## Rules
 
 - Never edit inside `AUTO-GENERATED`.
@@ -58,5 +92,6 @@ If `## Connections` is missing, add it near the end of the file.
 - Never delete user-written notes.
 - Do not duplicate links.
 - Use `[[Concept Name]]` wiki links.
+- Make graph links bidirectional where useful.
 - Prefer fewer, high-signal concepts over noisy tags.
 - Do not create vague concepts like `Paper`, `Method`, `System`, `Result`, or `Research`.

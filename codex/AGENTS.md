@@ -10,6 +10,7 @@
 - Treat AUTO-GENERATED as Zotero-owned
 - Treat AI-GENERATED as agent-owned
 - Treat CONCEPT-GENERATED as concept-linking-owned
+- Treat GRAPH-GENERATED as concept-graph-index-owned
 
 ## File Rules
 - Papers are stored in: papers/
@@ -19,13 +20,14 @@
 ## Editing Rules
 - Paper digestion should only modify the AI-GENERATED block
 - Concept linking may modify CONCEPT-GENERATED blocks in concepts/
+- Concept linking may modify GRAPH-GENERATED in concepts/Concept Graph.md
 - Concept linking may modify Connections in papers/ (append only)
 - Prefer adding, not replacing
 
 ## Linking Rules
 - Use [[Concept]] style links
 - Do not duplicate content across files
-- Prefer linking papers to concepts
+- Prefer bidirectional graph links: papers to concepts, concepts back to papers, and concepts to related concepts
 
 ## Behavior
 - Be concise
