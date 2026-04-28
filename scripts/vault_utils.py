@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAPERS_PATH = os.path.join(BASE_DIR, "papers")
 CONCEPTS_PATH = os.path.join(BASE_DIR, "concepts")
+NOTES_PATH = os.path.join(BASE_DIR, "notes")
 SYSTEM_PATH = os.path.join(BASE_DIR, ".system")
 
 AUTO_START = "<!-- AUTO-GENERATED START -->"

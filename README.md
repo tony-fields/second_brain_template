@@ -214,6 +214,17 @@ Asks Codex to answer using only the vault. It should cite paper citekeys and
 link concepts.
 
 
+Vault Web Research
+------------------
+
+  bash scripts/vault_web_research.sh "How does the vault compare to current work on blind signatures?"
+
+Builds a compact vault context pack at .system/context_pack.md, then starts
+Codex with web search enabled. Use this when you want local vault context plus
+current internet information. The agent should keep vault evidence and web
+evidence clearly separated.
+
+
 Literature Review
 -----------------
 
@@ -314,6 +325,23 @@ Useful command:
   bash scripts/literature_review.sh "your topic"
 
 
+vault-web-research
+------------------
+
+Path:
+
+  codex/skills/vault-web-research/SKILL.md
+
+Purpose:
+
+  Load a compact map of the vault into context and use web search for current
+  external information, while keeping vault evidence and web evidence separate.
+
+Useful command:
+
+  bash scripts/vault_web_research.sh "your question"
+
+
 CODEX COMMAND FILES
 ===================
 
@@ -331,6 +359,9 @@ CODEX COMMAND FILES
 
   codex/commands/literature_review.md
     Literature review prompt.
+
+  codex/commands/vault_web_research.md
+    Vault-aware web research prompt.
 
   codex/commands/query_brain.md
     Older query prompt kept for compatibility.
@@ -395,6 +426,7 @@ Generated local state lives in .system/:
   .system/papers.json
   .system/concepts.json
   .system/pipeline_log.jsonl
+  .system/context_pack.md
 
 These files are ignored by git. They can be rebuilt with:
 
@@ -424,6 +456,8 @@ If you use an Obsidian shell-command plugin, add commands like:
 
   bash scripts/literature_review.sh "your topic"
 
+  bash scripts/vault_web_research.sh "your question"
+
 If your plugin does not run commands from the vault root, configure its working
 directory to the vault root or prefix the command with a relative cd.
 
@@ -443,6 +477,37 @@ Recommended template workflow:
 
 Generated manifests and logs are local state. Paper notes, concept notes, and
 human-authored notes are the important long-term artifacts.
+
+
+RESUMING CODEX SESSIONS
+=======================
+
+Most scripts start fresh Codex runs. This is best for reproducible template
+workflows because each run reads the repository state from disk.
+
+If you are doing a long exploratory session and want to avoid reinitializing
+context, resume the most recent CLI session:
+
+  bash scripts/resume_codex.sh
+
+Resume with a prompt:
+
+  bash scripts/resume_codex.sh "continue linking concepts"
+
+Resume with web search enabled:
+
+  bash scripts/resume_web_codex.sh "continue the web comparison"
+
+Tradeoff:
+
+  - Fresh runs are cleaner, reproducible, and safer for automation.
+  - Resumed runs save context tokens and preserve discussion state, but can
+    carry stale assumptions.
+
+For deep interactive work, the Codex app may be better than an Obsidian shell
+command because you can inspect changes, steer the agent, and keep a visible
+conversation. For repeatable commands like import, digest, link, check, and
+repair, the CLI scripts are better.
 
 
 TROUBLESHOOTING

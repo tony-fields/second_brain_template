@@ -2,3 +2,4 @@
 __pycache__/
 .system/*.json
 .system/*.jsonl
+.system/*.md
