@@ -54,3 +54,5 @@ The command should report no papers needing AI digestion unless some papers lack
 - Use only information present in the paper note.
 - Be concise and technical.
 - If the note has no abstract and no highlights, mark `AI-STATUS: needs-source` and explain what is missing inside the AI block.
+- If digestion fails, mark `AI-STATUS: failed` and include a short reason inside the AI block.
+- If the digest is uncertain and needs human review, mark `AI-STATUS: review-needed`.

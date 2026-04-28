@@ -60,6 +60,14 @@ python3 scripts/paper_digest_status.py
 
 5. Run `python3 scripts/paper_digest_status.py` again. The expected result is no stale papers except those intentionally marked `needs-source`.
 
+Allowed statuses:
+
+- `pending`
+- `complete`
+- `needs-source`
+- `failed`
+- `review-needed`
+
 ## Writing Guidelines
 
 - Use only facts present in the note.
@@ -67,3 +75,4 @@ python3 scripts/paper_digest_status.py
 - Prefer 3-6 bullets for contributions and core ideas.
 - Candidate concepts should use Obsidian wiki links, for example `[[Blind Signatures]]`.
 - Do not add duplicate links.
+- Use `failed` for tool/runtime failures and `review-needed` when the source is ambiguous.

@@ -4,6 +4,8 @@ import re
 import hashlib
 import argparse
 
+from vault_utils import append_log, rebuild_manifests
+
 # ===== PATH SETUP (RELATIVE) =====
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -324,3 +326,6 @@ print(f"Created: {created}")
 print(f"Updated: {updated}")
 print(f"Unchanged: {unchanged}")
 print(f"Skipped: {skipped}")
+
+rebuild_manifests()
+append_log("zotero_import", created=created, updated=updated, unchanged=unchanged, skipped=skipped)

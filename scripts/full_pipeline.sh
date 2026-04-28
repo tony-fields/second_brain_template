@@ -15,4 +15,7 @@ bash scripts/digest_papers.sh
 echo "Step 3: Running concept linking"
 bash scripts/link_concepts.sh
 
+echo "Step 4: Checking vault integrity"
+bash scripts/check_vault.sh
+
 echo "Pipeline complete"
