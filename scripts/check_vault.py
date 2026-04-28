@@ -103,7 +103,19 @@ def main():
     if not os.path.isdir(CONCEPTS_PATH):
         issue(issues, "error", "concepts/", "missing concepts directory")
 
-    rebuild_manifests()
+    papers, _ = rebuild_manifests()
+
+    print(f"Papers checked: {len(papers)}")
+    if papers:
+        print("Papers:")
+        for paper in papers:
+            print(
+                f"- {paper['citekey']} | {paper['digest_status']} | "
+                f"{paper['title']} | {paper['path']}"
+            )
+    else:
+        print("Papers: none")
+    print("")
 
     if not issues:
         print("Vault check passed.")

@@ -40,6 +40,8 @@ else:
 
     if not json_files:
         print("No Zotero export JSON found in zotero-export/")
+        print("Expected: zotero-export/library.json")
+        print("Run: python3 scripts/debug_zotero_export.py")
         exit(1)
 
     EXPORT_PATH = os.path.join(EXPORT_DIR, json_files[0])
