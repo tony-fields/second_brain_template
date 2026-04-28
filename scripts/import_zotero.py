@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser(description="Import a Better BibTeX JSON export
 parser.add_argument(
     "--export",
     default=None,
-    help="Path to a Zotero Better BibTeX JSON export. Defaults to zotero-export/library.json, then the first JSON file in zotero-export/.",
+    help="Path to a Zotero Better BibTeX JSON export. Defaults to the newest JSON file in zotero-export/.",
 )
 args = parser.parse_args()
 
@@ -33,18 +33,22 @@ args = parser.parse_args()
 
 if args.export:
     EXPORT_PATH = os.path.abspath(args.export)
-elif os.path.exists(os.path.join(EXPORT_DIR, "library.json")):
-    EXPORT_PATH = os.path.join(EXPORT_DIR, "library.json")
 else:
-    json_files = sorted(f for f in os.listdir(EXPORT_DIR) if f.endswith(".json"))
+    json_paths = [
+        os.path.join(EXPORT_DIR, f)
+        for f in os.listdir(EXPORT_DIR)
+        if f.endswith(".json")
+    ]
 
-    if not json_files:
+    if not json_paths:
         print("No Zotero export JSON found in zotero-export/")
-        print("Expected: zotero-export/library.json")
+        print("Expected: any .json file in zotero-export/")
         print("Run: python3 scripts/debug_zotero_export.py")
         exit(1)
 
-    EXPORT_PATH = os.path.join(EXPORT_DIR, json_files[0])
+    EXPORT_PATH = max(json_paths, key=os.path.getmtime)
+
+print(f"Using Zotero export: {os.path.relpath(EXPORT_PATH, BASE_DIR)}")
 
 # ===== HELPERS =====
 
